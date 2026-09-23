@@ -42,7 +42,12 @@ const ADD_ON_OPTIONS = [
   { id: "sms", label: "SMS notifications (text credits billed separately)" },
 ];
 
-const STEPS = ["School details", "What you need", "Features", "Budget & timeline"];
+const STEPS = [
+  "School details",
+  "What you need",
+  "Features",
+  "Budget & timeline",
+];
 
 const emptyForm: IntakeFormData = {
   schoolName: "",
@@ -80,7 +85,9 @@ function Field({
     <label className="block">
       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
         {label}
-        {required && <span className="text-amber-600 dark:text-amber-400"> *</span>}
+        {required && (
+          <span className="text-amber-600 dark:text-amber-400"> *</span>
+        )}
       </span>
       <div className="mt-1.5">{children}</div>
     </label>
@@ -117,9 +124,20 @@ function RadioCard({
       }`}
       aria-pressed={selected}
     >
-      <input type="radio" name={name} value={value} checked={selected} readOnly className="sr-only" />
+      <input
+        type="radio"
+        name={name}
+        value={value}
+        checked={selected}
+        readOnly
+        className="sr-only"
+      />
       <div className="font-medium">{title}</div>
-      <div className={`mt-0.5 text-sm ${selected ? "opacity-90" : "opacity-70"}`}>{description}</div>
+      <div
+        className={`mt-0.5 text-sm ${selected ? "opacity-90" : "opacity-70"}`}
+      >
+        {description}
+      </div>
     </button>
   );
 }
@@ -133,8 +151,10 @@ export default function ClientIntakeForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  const update = <K extends keyof IntakeFormData>(key: K, value: IntakeFormData[K]) =>
-    setForm((f) => ({ ...f, [key]: value }));
+  const update = <K extends keyof IntakeFormData>(
+    key: K,
+    value: IntakeFormData[K],
+  ) => setForm((f) => ({ ...f, [key]: value }));
 
   const toggleExcludedModule = (id: string) =>
     setForm((f) => ({
@@ -147,11 +167,14 @@ export default function ClientIntakeForm() {
   const toggleAddOn = (id: string) =>
     setForm((f) => ({
       ...f,
-      addOns: f.addOns.includes(id) ? f.addOns.filter((x) => x !== id) : [...f.addOns, id],
+      addOns: f.addOns.includes(id)
+        ? f.addOns.filter((x) => x !== id)
+        : [...f.addOns, id],
     }));
 
   const canAdvance = () => {
-    if (step === 0) return form.schoolName && form.contactName && form.email && form.phone;
+    if (step === 0)
+      return form.schoolName && form.contactName && form.email && form.phone;
     if (step === 1) return form.serviceType && form.engagementType;
     return true;
   };
@@ -180,7 +203,8 @@ export default function ClientIntakeForm() {
           "Engagement type": form.engagementType,
           "Current record system": form.currentSystem,
           "Existing Paystack account": form.hasPaystackAccount,
-          "Default modules to exclude": form.excludedModules.join(", ") || "None — keep all",
+          "Default modules to exclude":
+            form.excludedModules.join(", ") || "None — keep all",
           "Optional add-ons wanted": form.addOns.join(", ") || "None selected",
           "Budget range": form.budgetRange,
           Timeline: form.timeline,
@@ -191,10 +215,14 @@ export default function ClientIntakeForm() {
       if (data.success) {
         setSubmitted(true);
       } else {
-        setSubmitError("Something went wrong sending your details. Please try again.");
+        setSubmitError(
+          "Something went wrong sending your details. Please try again.",
+        );
       }
     } catch {
-      setSubmitError("Couldn't reach the server. Check your connection and try again.");
+      setSubmitError(
+        "Couldn't reach the server. Check your connection and try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -203,11 +231,41 @@ export default function ClientIntakeForm() {
   if (submitted) {
     return (
       <div className="mx-auto max-w-xl px-6 py-16 text-center">
-        <h2 className="font-serif text-2xl text-slate-900 dark:text-slate-100">Thanks, {form.contactName.split(" ")[0]}.</h2>
+        <h2 className="font-serif text-2xl text-slate-900 dark:text-slate-100">
+          Thanks, {form.contactName.split(" ")[0]}.
+        </h2>
+
         <p className="mt-3 text-slate-600 dark:text-slate-400">
-          We've received {form.schoolName}'s details. Expect a tailored offer with feature pricing
-          within 2 business days.
+          We've received {form.schoolName}'s details. Expect a tailored offer
+          with feature pricing within 2 business days.
         </p>
+
+        <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-800/50">
+          <h3 className="font-medium text-slate-900 dark:text-slate-100">
+            While you wait, check out our offer
+          </h3>
+
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Learn more about our features, pricing, and what we can offer your
+            school.
+          </p>
+
+          <a
+            href="/offer.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 inline-flex items-center justify-center rounded-lg bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+          >
+            View Our Offer
+          </a>
+          <a
+            href="/offer.pdf"
+            download="Our-Offer.pdf"
+            className="mt-5 ml-5 inline-flex items-center justify-center rounded-lg bg-sky-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-sky-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
+          >
+            Download Our Offer
+          </a>
+        </div>
       </div>
     );
   }
@@ -215,7 +273,9 @@ export default function ClientIntakeForm() {
   return (
     <div className="mx-auto max-w-xl px-6 py-12">
       <header className="mb-8">
-        <p className="text-sm font-medium text-amber-600 dark:text-amber-400">Client Intake</p>
+        <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
+          Client Intake
+        </p>
         <h1 className="mt-1 font-serif text-3xl text-slate-900 dark:text-slate-100">
           Tell us about your school
         </h1>
@@ -238,49 +298,100 @@ export default function ClientIntakeForm() {
               {i + 1}
             </div>
             {i < STEPS.length - 1 && (
-              <div className={`h-px flex-1 ${i < step ? "bg-slate-900 dark:bg-slate-100" : "bg-slate-200 dark:bg-slate-800"}`} />
+              <div
+                className={`h-px flex-1 ${i < step ? "bg-slate-900 dark:bg-slate-100" : "bg-slate-200 dark:bg-slate-800"}`}
+              />
             )}
           </li>
         ))}
       </ol>
-      <p className="mb-6 text-sm text-slate-500 dark:text-slate-500">{STEPS[step]}</p>
+      <p className="mb-6 text-sm text-slate-500 dark:text-slate-500">
+        {STEPS[step]}
+      </p>
 
       {/* Step 0: School details */}
       {step === 0 && (
         <div className="space-y-4">
           <Field label="School name" required>
-            <input className={inputClass} value={form.schoolName} onChange={(e) => update("schoolName", e.target.value)} placeholder="e.g. Greenwood International School" />
+            <input
+              className={inputClass}
+              value={form.schoolName}
+              onChange={(e) => update("schoolName", e.target.value)}
+              placeholder="e.g. Greenwood International School"
+            />
           </Field>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Your name" required>
-              <input className={inputClass} value={form.contactName} onChange={(e) => update("contactName", e.target.value)} placeholder="Full name" />
+              <input
+                className={inputClass}
+                value={form.contactName}
+                onChange={(e) => update("contactName", e.target.value)}
+                placeholder="Full name"
+              />
             </Field>
             <Field label="Your role">
-              <input className={inputClass} value={form.contactRole} onChange={(e) => update("contactRole", e.target.value)} placeholder="e.g. Proprietor, Admin" />
+              <input
+                className={inputClass}
+                value={form.contactRole}
+                onChange={(e) => update("contactRole", e.target.value)}
+                placeholder="e.g. Proprietor, Admin"
+              />
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Email" required>
-              <input type="email" className={inputClass} value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="you@school.edu.ng" />
+              <input
+                type="email"
+                className={inputClass}
+                value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+                placeholder="you@school.edu.ng"
+              />
             </Field>
             <Field label="Phone" required>
-              <input type="tel" className={inputClass} value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="080..." />
+              <input
+                type="tel"
+                className={inputClass}
+                value={form.phone}
+                onChange={(e) => update("phone", e.target.value)}
+                placeholder="080..."
+              />
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Number of students">
-              <input className={inputClass} value={form.studentCount} onChange={(e) => update("studentCount", e.target.value)} placeholder="e.g. 450" />
+              <input
+                className={inputClass}
+                value={form.studentCount}
+                onChange={(e) => update("studentCount", e.target.value)}
+                placeholder="e.g. 450"
+              />
             </Field>
             <Field label="Expected students in 2 years">
-              <input className={inputClass} value={form.studentCountFuture} onChange={(e) => update("studentCountFuture", e.target.value)} placeholder="e.g. 700" />
+              <input
+                className={inputClass}
+                value={form.studentCountFuture}
+                onChange={(e) => update("studentCountFuture", e.target.value)}
+                placeholder="e.g. 700"
+              />
             </Field>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Number of staff">
-              <input className={inputClass} value={form.staffCount} onChange={(e) => update("staffCount", e.target.value)} placeholder="e.g. 30" />
+              <input
+                className={inputClass}
+                value={form.staffCount}
+                onChange={(e) => update("staffCount", e.target.value)}
+                placeholder="e.g. 30"
+              />
             </Field>
             <Field label="Number of campuses">
-              <input className={inputClass} value={form.campusCount} onChange={(e) => update("campusCount", e.target.value)} placeholder="e.g. 1" />
+              <input
+                className={inputClass}
+                value={form.campusCount}
+                onChange={(e) => update("campusCount", e.target.value)}
+                placeholder="e.g. 1"
+              />
             </Field>
           </div>
         </div>
@@ -290,19 +401,65 @@ export default function ClientIntakeForm() {
       {step === 1 && (
         <div className="space-y-6">
           <div>
-            <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">What are you looking for? *</p>
+            <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+              What are you looking for? *
+            </p>
             <div className="space-y-2">
-              <RadioCard name="serviceType" value="website" current={form.serviceType} onChange={(v) => update("serviceType", v as ServiceType)} title="A basic website" description="Public-facing site with school info, admissions, and contact details." />
-              <RadioCard name="serviceType" value="portal" current={form.serviceType} onChange={(v) => update("serviceType", v as ServiceType)} title="A full portal" description="Student/staff/parent logins, results, payments, and SMS." />
-              <RadioCard name="serviceType" value="unsure" current={form.serviceType} onChange={(v) => update("serviceType", v as ServiceType)} title="Not sure yet" description="We can help you decide based on your needs and budget." />
+              <RadioCard
+                name="serviceType"
+                value="website"
+                current={form.serviceType}
+                onChange={(v) => update("serviceType", v as ServiceType)}
+                title="A basic website"
+                description="Public-facing site with school info, admissions, and contact details."
+              />
+              <RadioCard
+                name="serviceType"
+                value="portal"
+                current={form.serviceType}
+                onChange={(v) => update("serviceType", v as ServiceType)}
+                title="A full portal"
+                description="Student/staff/parent logins, results, payments, and SMS."
+              />
+              <RadioCard
+                name="serviceType"
+                value="unsure"
+                current={form.serviceType}
+                onChange={(v) => update("serviceType", v as ServiceType)}
+                title="Not sure yet"
+                description="We can help you decide based on your needs and budget."
+              />
             </div>
           </div>
           <div>
-            <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">How would you prefer to pay? *</p>
+            <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+              How would you prefer to pay? *
+            </p>
             <div className="space-y-2">
-              <RadioCard name="engagementType" value="one-time" current={form.engagementType} onChange={(v) => update("engagementType", v as EngagementType)} title="One-time payment" description="Pay once for the build, own the system outright." />
-              <RadioCard name="engagementType" value="subscription" current={form.engagementType} onChange={(v) => update("engagementType", v as EngagementType)} title="Monthly subscription" description="Lower upfront cost, hosted and maintained by us." />
-              <RadioCard name="engagementType" value="unsure" current={form.engagementType} onChange={(v) => update("engagementType", v as EngagementType)} title="Not sure yet" description="Show me pricing for both and I'll decide." />
+              <RadioCard
+                name="engagementType"
+                value="one-time"
+                current={form.engagementType}
+                onChange={(v) => update("engagementType", v as EngagementType)}
+                title="One-time payment"
+                description="Pay once for the build, own the system outright."
+              />
+              <RadioCard
+                name="engagementType"
+                value="subscription"
+                current={form.engagementType}
+                onChange={(v) => update("engagementType", v as EngagementType)}
+                title="Monthly subscription"
+                description="Lower upfront cost, hosted and maintained by us."
+              />
+              <RadioCard
+                name="engagementType"
+                value="unsure"
+                current={form.engagementType}
+                onChange={(v) => update("engagementType", v as EngagementType)}
+                title="Not sure yet"
+                description="Show me pricing for both and I'll decide."
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -310,7 +467,9 @@ export default function ClientIntakeForm() {
               <select
                 className={inputClass}
                 value={form.currentSystem}
-                onChange={(e) => update("currentSystem", e.target.value as CurrentSystem)}
+                onChange={(e) =>
+                  update("currentSystem", e.target.value as CurrentSystem)
+                }
               >
                 <option value="">Select one</option>
                 <option value="paper">Paper</option>
@@ -322,7 +481,9 @@ export default function ClientIntakeForm() {
               <select
                 className={inputClass}
                 value={form.hasPaystackAccount}
-                onChange={(e) => update("hasPaystackAccount", e.target.value as YesNo)}
+                onChange={(e) =>
+                  update("hasPaystackAccount", e.target.value as YesNo)
+                }
               >
                 <option value="">Select one</option>
                 <option value="yes">Yes</option>
@@ -337,7 +498,9 @@ export default function ClientIntakeForm() {
       {step === 2 && (
         <div className="space-y-6">
           <div>
-            <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">Included by default</p>
+            <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Included by default
+            </p>
             <p className="mb-3 text-sm text-slate-500 dark:text-slate-500">
               These come standard in both plans. Untick anything you don't need.
             </p>
@@ -355,7 +518,13 @@ export default function ClientIntakeForm() {
                       onChange={() => toggleExcludedModule(opt.id)}
                       className="h-4 w-4 rounded border-slate-400 text-slate-900 focus:ring-slate-900 dark:border-slate-600 dark:text-slate-100"
                     />
-                    <span className={excluded ? "text-slate-400 line-through dark:text-slate-600" : "text-slate-800 dark:text-slate-200"}>
+                    <span
+                      className={
+                        excluded
+                          ? "text-slate-400 line-through dark:text-slate-600"
+                          : "text-slate-800 dark:text-slate-200"
+                      }
+                    >
                       {opt.label}
                     </span>
                   </label>
@@ -364,9 +533,12 @@ export default function ClientIntakeForm() {
             </div>
           </div>
           <div>
-            <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">Optional add-ons</p>
+            <p className="mb-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Optional add-ons
+            </p>
             <p className="mb-3 text-sm text-slate-500 dark:text-slate-500">
-              Priced separately from the base package. Select anything you're interested in.
+              Priced separately from the base package. Select anything you're
+              interested in.
             </p>
             <div className="space-y-2">
               {ADD_ON_OPTIONS.map((opt) => (
@@ -380,7 +552,9 @@ export default function ClientIntakeForm() {
                     onChange={() => toggleAddOn(opt.id)}
                     className="h-4 w-4 rounded border-slate-400 text-slate-900 focus:ring-slate-900 dark:border-slate-600 dark:text-slate-100"
                   />
-                  <span className="text-slate-800 dark:text-slate-200">{opt.label}</span>
+                  <span className="text-slate-800 dark:text-slate-200">
+                    {opt.label}
+                  </span>
                 </label>
               ))}
             </div>
@@ -392,13 +566,28 @@ export default function ClientIntakeForm() {
       {step === 3 && (
         <div className="space-y-4">
           <Field label="Rough budget range (optional)">
-            <input className={inputClass} value={form.budgetRange} onChange={(e) => update("budgetRange", e.target.value)} placeholder="e.g. ₦300,000 – ₦800,000" />
+            <input
+              className={inputClass}
+              value={form.budgetRange}
+              onChange={(e) => update("budgetRange", e.target.value)}
+              placeholder="e.g. ₦300,000 – ₦800,000"
+            />
           </Field>
           <Field label="When do you need this live?">
-            <input className={inputClass} value={form.timeline} onChange={(e) => update("timeline", e.target.value)} placeholder="e.g. Before next term starts" />
+            <input
+              className={inputClass}
+              value={form.timeline}
+              onChange={(e) => update("timeline", e.target.value)}
+              placeholder="e.g. Before next term starts"
+            />
           </Field>
           <Field label="Anything else we should know?">
-            <textarea className={`${inputClass} min-h-25`} value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Current systems in use, specific pain points, etc." />
+            <textarea
+              className={`${inputClass} min-h-25`}
+              value={form.notes}
+              onChange={(e) => update("notes", e.target.value)}
+              placeholder="Current systems in use, specific pain points, etc."
+            />
           </Field>
         </div>
       )}
@@ -433,7 +622,9 @@ export default function ClientIntakeForm() {
         )}
       </div>
       {submitError && (
-        <p className="mt-3 text-right text-sm text-red-600 dark:text-red-400">{submitError}</p>
+        <p className="mt-3 text-right text-sm text-red-600 dark:text-red-400">
+          {submitError}
+        </p>
       )}
     </div>
   );
